@@ -9,6 +9,8 @@ import WhatsNew from "../../components/WhatsNew";
 import styles from "./catalogue.module.css";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 type Product = {
   id: string;
   name: string;
