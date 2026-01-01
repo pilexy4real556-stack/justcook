@@ -1,11 +1,11 @@
 "use client";
 
-import { useCart } from "../../lib/cart";
-import { Suspense, useEffect, useState } from "react";
+import { useCart } from "@/app/lib/cart";
+import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../lib/firebaseClient";
+import { db } from "@/app/lib/firebaseClient";
 import { useRouter, useSearchParams } from "next/navigation";
-import WhatsNew from "../../components/WhatsNew";
+import WhatsNew from "@/app/components/WhatsNew";
 import styles from "./catalogue.module.css";
 import Link from "next/link";
 
@@ -29,15 +29,7 @@ const categories = [
   "Misc",
 ];
 
-export default function CataloguePage() {
-  return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <CatalogueContent />
-    </Suspense>
-  );
-}
-
-function CatalogueContent() {
+export default function CatalogueClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addToCart } = useCart();
@@ -63,8 +55,8 @@ function CatalogueContent() {
       const snap = await getDocs(q);
       setProducts(
         snap.docs.map((doc) => ({
-          id: doc.id,
           ...(doc.data() as Product),
+          id: doc.id,
         }))
       );
 
@@ -105,25 +97,15 @@ function CatalogueContent() {
 
         <div className={styles.catalogueGrid}>
           {products.map((p) => (
-            <div
-              key={p.id}
-              className={styles.catalogueCard}
-              onClick={() => router.push(`/product/${p.id}`)}
-              role="button"
-            >
-              <div className={styles.imageWrap}>
-                <img src={p.imageUrl?.[0]} alt={p.name} />
-              </div>
-
-              <div className={styles.cardBody}>
+            <Link key={p.id} href={`/product/${p.id}`}>
+              <div className={styles.catalogueCard}>
+                <img src={p.imageUrl?.[0]} />
                 <h4>{p.name}</h4>
-                <p className={styles.price}>£{p.unitPrice}</p>
+                <p>£{p.unitPrice.toFixed(2)}</p>
 
-                {/* STOP CLICK FROM BUBBLING */}
                 <button
-                  className={styles.addToCartBtn}
                   onClick={(e) => {
-                    e.stopPropagation(); // 👈 THIS IS THE FIX
+                    e.preventDefault();
                     addToCart({
                       id: p.id,
                       name: p.name,
@@ -135,7 +117,7 @@ function CatalogueContent() {
                   Add to cart
                 </button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
