@@ -8,7 +8,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 
 import "swiper/css";
-import "swiper/css/autoplay";
 
 import styles from "./WhatsNew.module.css";
 
@@ -35,8 +34,6 @@ export default function WhatsNew() {
           where("active", "==", true)
         );
 
-        console.log("Query Path:", q); // Debugging log
-
         const snap = await getDocs(q);
 
         const imageMapping = {
@@ -50,16 +47,13 @@ export default function WhatsNew() {
 
         const data = snap.docs.map((doc) => {
           const docData = doc.data();
-          console.log("Document Data:", docData); // Log each document's data
           return {
             id: doc.id,
             title: docData.title,
             subtitle: docData.subtitle,
-            imageUrl: `/images/${imageMapping[docData.title] || "placeholder.png"}`, // Map to public/images folder
+            imageUrl: `/images/${imageMapping[docData.title] || "placeholder.png"}`,
           };
         });
-
-        console.log("Fetched Firestore Data:", data); // Debugging log
 
         setItems(data);
       } catch (error) {
@@ -71,56 +65,40 @@ export default function WhatsNew() {
   }, []);
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      const swiperElement = document.querySelector(".swiper") as HTMLElement & { swiper?: any };
-      if (document.visibilityState === "visible" && swiperElement?.swiper?.autoplay) {
-        console.log("Page visible, restarting autoplay");
-        swiperElement.swiper.autoplay.start();
-      } else if (document.visibilityState === "hidden" && swiperElement?.swiper?.autoplay) {
-        console.log("Page hidden, stopping autoplay");
-        swiperElement.swiper.autoplay.stop();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+    const swiperElement = document.querySelector(".swiper") as HTMLElement & { swiper?: any };
+    swiperElement?.swiper?.autoplay?.start();
+  }, [items]);
 
   if (!items.length) return null;
 
-  console.log("Swiper modules loaded:", Autoplay); // Debugging log
-
   return (
     <section className={styles.wrapper}>
-      <Swiper
-        modules={[Autoplay]}
-        slidesPerView="auto"
-        spaceBetween={20}
-        loop
-        speed={8000}
-        autoplay={{
-          delay: 0,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: false,
-        }}
-        allowTouchMove={true}
-        onSwiper={(swiper) => swiper.autoplay.start()}
-      >
-        {items.map((item) => (
-          <SwiperSlide key={item.id} style={{ width: 320 }}>
-            <div className={styles.card}>
-              <img src={item.imageUrl} alt={item.title} />
-              <div className={styles.text}>
-                <h3>{item.title}</h3>
-                {item.subtitle && <p>{item.subtitle}</p>}
+      <div className="carousel" key="whats-new-carousel">
+        <Swiper
+          modules={[Autoplay]}
+          slidesPerView="auto"
+          spaceBetween={20}
+          loop={true} // Ensure looping is enabled
+          speed={5000}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false, // Prevent stopping on user interaction
+            pauseOnMouseEnter: false, // Ensure autoplay continues even on hover
+          }}
+        >
+          {items.map((item) => (
+            <SwiperSlide key={item.id} style={{ width: 320 }}>
+              <div className={styles.card}>
+                <img src={item.imageUrl} alt={item.title} />
+                <div className={styles.text}>
+                  <h3>{item.title}</h3>
+                  {item.subtitle && <p>{item.subtitle}</p>}
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
     </section>
   );
 }
