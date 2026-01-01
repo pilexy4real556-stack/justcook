@@ -1,0 +1,186 @@
+.catalogueGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 16px 0 32px;
+}
+
+.catalogueCard {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.catalogueCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.catalogueCard img {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.productImage {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #f6f6f6;
+  margin-bottom: 8px;
+}
+
+.productTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 6px 0 4px;
+}
+
+.productPrice {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1b7d2b;
+  margin-bottom: 10px;
+}
+
+.addButton {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #bfff00, #8fdc00);
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(150, 200, 0, 0.4);
+}
+
+.addButton:active {
+  transform: scale(0.98);
+}
+
+.whatsNewWrapper {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 10px 0 20px;
+  scroll-snap-type: x mandatory;
+}
+
+.whatsNewCard {
+  flex: 0 0 280px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+  overflow: hidden;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+.whatsNewImage {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.whatsNewContent {
+  padding: 12px;
+}
+
+.whatsNewTitle {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.whatsNewSubtitle {
+  font-size: 13px;
+  color: #555;
+}
+
+.addToCartBtn {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 10px;
+
+  background: linear-gradient(135deg, #b7f000, #7ed321);
+  color: #0b0b0b;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(126, 211, 33, 0.35);
+
+  transition: all 0.2s ease;
+}
+
+.addToCartBtn:hover {
+  background: linear-gradient(135deg, #c9ff00, #8eea3d);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(126, 211, 33, 0.45);
+}
+
+.addToCartBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(126, 211, 33, 0.3);
+}
+
+.addToCartBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.category-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 10px 0;
+}
+
+.category-scroll button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid #d6f200;
+  background: #f7ffd6;
+  color: #2b2b2b;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.category-scroll button:hover {
+  background: #dfff3a;
+  transform: translateY(-1px);
+}
+
+.category-scroll button.active {
+  background: #c6f500;
+  color: #000;
+  border-color: #b7e600;
+  box-shadow: 0 4px 12px rgba(160, 200, 0, 0.35);
+}

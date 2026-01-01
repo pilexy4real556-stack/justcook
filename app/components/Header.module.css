@@ -1,0 +1,45 @@
+.cartIcon {
+  width: 26px;
+  height: 26px;
+  filter: brightness(0) invert(1);
+}
+
+.cartWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.myOrdersBtn {
+  padding: 10px 16px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.25);
+  color: #000;
+
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.4);
+
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+
+  transition: all 0.18s ease;
+}
+
+.myOrdersBtn:hover {
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.35);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}

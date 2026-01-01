@@ -1,0 +1,36 @@
+.wrapper {
+  width: 100%;
+  padding: 10px 0 30px;
+}
+
+.card {
+  background: #d4ff00; /* Lemon green */
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.text {
+  padding: 12px;
+}
+
+.text h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.text p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #666;
+}
+
+:global(.swiper-wrapper) {
+  transition-timing-function: linear !important;
+}
