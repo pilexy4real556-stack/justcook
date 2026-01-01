@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useCart } from "@/app/lib/cart";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
