@@ -24,13 +24,14 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: 120px;
+  align-items: center;
 }
 
 .catalogue-container {
   width: 100%;
-  max-width: 1200px; /* THIS FIXES EVERYTHING */
-  padding: 0 16px;
+  max-width: 1400px;
+  margin: auto;
+  padding: 0 24px;
 }
 
 .catalogueContainer {
@@ -49,9 +50,9 @@
 /* PRODUCT GRID */
 .catalogueGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
-  width: 100%;
+  margin-top: 20px;
 }
 
 /* Desktop – allow more items per row */
@@ -77,12 +78,11 @@
 
 /* PRODUCT CARD */
 .catalogueCard {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
 }
 
 /* IMAGE */
@@ -96,6 +96,12 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.catalogueCard img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 
 /* CARD BODY */

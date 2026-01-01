@@ -42,9 +42,8 @@ export default function CataloguePage() {
 
   useEffect(() => {
     const load = async () => {
-      setLoading(true);
-
       let q;
+
       if (tag) {
         q = query(collection(db, "products"), where("tags", "array-contains", tag));
       } else if (category !== "ALL") {
@@ -73,13 +72,10 @@ export default function CataloguePage() {
     <main className="catalogue-wrapper">
       <div className="catalogue-container">
 
-        {/* WHAT'S NEW */}
         <h2 className="section-title">What’s New</h2>
         <WhatsNew />
 
-        {/* CATEGORIES */}
         <h2 className="section-title">Categories</h2>
-
         <div className="category-scroll">
           {categories.map((cat) => (
             <button
@@ -98,42 +94,38 @@ export default function CataloguePage() {
           ))}
         </div>
 
-        {/* PRODUCTS */}
         <h2 className="section-title">Products</h2>
 
         <div className={styles.catalogueGrid}>
           {products.map((p) => (
-            <Link key={p.id} href={`/product/${p.id}`} className={styles.catalogueLink}>
+            <Link
+              key={p.id}
+              href={`/product/${p.id}`}
+              className={styles.catalogueLink}
+            >
               <div className={styles.catalogueCard}>
-                <div className={styles.imageWrap}>
-                  <img src={p.imageUrl?.[0]} alt={p.name} />
-                </div>
+                <img src={p.imageUrl?.[0]} alt={p.name} />
+                <h4>{p.name}</h4>
+                <p>£{p.unitPrice.toFixed(2)}</p>
 
-                <div className={styles.cardBody}>
-                  <h4>{p.name}</h4>
-                  <p className={styles.price}>£{p.unitPrice.toFixed(2)}</p>
-
-                  <button
-                    className={styles.addToCartBtn}
-                    onClick={(e) => {
-                      e.preventDefault(); // <-- IMPORTANT
-                      e.stopPropagation();
-                      addToCart({
-                        id: p.id,
-                        name: p.name,
-                        price: p.unitPrice,
-                        quantity: 1,
-                      });
-                    }}
-                  >
-                    Add to cart
-                  </button>
-                </div>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addToCart({
+                      id: p.id,
+                      name: p.name,
+                      price: p.unitPrice,
+                      quantity: 1,
+                    });
+                  }}
+                >
+                  Add to cart
+                </button>
               </div>
             </Link>
           ))}
         </div>
-
       </div>
     </main>
   );
