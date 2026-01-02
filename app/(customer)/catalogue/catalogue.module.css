@@ -88,6 +88,44 @@
   background: #b6e000;
 }
 
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #4caf50; /* Green border */
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-bar input:focus {
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5); /* Green glow */
+}
+
+.search-bar button {
+  padding: 12px 16px;
+  background-color: #4caf50; /* Green background */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-bar button:hover {
+  background-color: #45a049; /* Darker green */
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .catalogueGrid {

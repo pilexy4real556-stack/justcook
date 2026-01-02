@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export function getDeliveryBand(distanceMiles: number) {
   if (distanceMiles == null || isNaN(distanceMiles)) {
     return null;
@@ -20,4 +24,41 @@ export function getDeliveryBand(distanceMiles: number) {
     fee: 0, // IMPORTANT: never null
     requiresQuote: true,
   };
+}
+
+export const useDeliveryLogic = () => {
+  const [distance, setDistance] = useState<number | null>(null);
+  const [delivery, setDelivery] = useState<any>(null);
+
+  const handleDeliveryCheck = async (address: string) => {
+    const miles = await calculateDistanceFromAddress(address);
+
+    if (miles != null) {
+      const result = getDeliveryBand(miles);
+      setDelivery(result);
+    }
+  };
+
+  return { distance, delivery, handleDeliveryCheck };
+};
+
+export async function calculateDistanceFromAddress(address: string): Promise<number | null> {
+  try {
+    const response = await fetch("/api/distance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ address }),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to calculate distance", response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.distanceMiles || null;
+  } catch (error) {
+    console.error("Error calculating distance", error);
+    return null;
+  }
 }

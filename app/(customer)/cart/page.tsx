@@ -32,12 +32,13 @@ export default function CartPage() {
   );
 
   // delivery fee comes from getDeliveryBand() in PENCE
-  const baseDeliveryFeePence = delivery?.fee ?? 0;
+  const deliveryPence = delivery?.fee ?? 0;
+  const deliveryPounds = deliveryPence / 100;
 
   // apply student discount ONLY to delivery fee (still in pence)
   const discountedDeliveryFeePence = isStudent
-    ? Math.round(baseDeliveryFeePence * 0.85)
-    : baseDeliveryFeePence;
+    ? Math.round(deliveryPence * 0.85)
+    : deliveryPence;
 
   // final total shown to user in pounds
   const finalTotalPounds = itemsTotalPounds + discountedDeliveryFeePence / 100;
@@ -45,56 +46,32 @@ export default function CartPage() {
   const canCheckout = !!delivery && items.length > 0;
 
   const handleCheckout = async () => {
-    const customerId = getOrCreateCustomerId();
-
-    if (items.length === 0) {
-      alert("Cart is empty");
-      return;
-    }
-
-    if (!delivery) {
-      alert("Delivery not available for this address");
-      return;
-    }
-
-    const userRef = doc(db, "users", customerId);
-    const userSnap = await getDoc(userRef);
-    let userFreeDeliveryCredits = 0;
-
-    if (userSnap.exists()) {
-      userFreeDeliveryCredits = userSnap.data().freeDeliveryCredits || 0;
-    }
-
-    let deliveryFee = delivery?.fee ?? 0;
-
-    if (userFreeDeliveryCredits > 0) {
-      deliveryFee = 0; // Apply free delivery
-    }
-
-    const res = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items,
-        delivery,
-        deliveryAddress: address,
-        customerId,
-        isStudent,
-        freeDelivery: userFreeDeliveryCredits > 0,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.url) {
-      // Call referral creation API
-      await fetch("/api/referral/create", {
+    try {
+      const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: customerId }),
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            name: item.name,
+            price: item.price, // price is pounds
+            quantity: item.quantity,
+          })),
+          deliveryFeePence: deliveryPence,
+        }),
       });
 
-      window.location.href = data.url; // ✅ Do not clear cart here
+      const data = await res.json();
+
+      if (!data?.url) {
+        console.error("Stripe error:", data);
+        alert("Stripe failed to create checkout session");
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      alert("Payment failed");
     }
   };
 
@@ -119,6 +96,11 @@ export default function CartPage() {
         });
 
         const data = await res.json();
+
+        setDeliveryFee(data.fee); // ← THIS MUST HAPPEN
+
+        console.log("DELIVERY SET:", data.fee);
+
         setDistance(data.distanceMiles);
         setDelivery(getDeliveryBand(data.distanceMiles));
       } catch {
@@ -260,14 +242,14 @@ export default function CartPage() {
                 {isStudent ? (
                   <>
                     <span style={{ textDecoration: "line-through", color: "#999" }}>
-                      £{(baseDeliveryFeePence / 100).toFixed(2)}
+                      £{(deliveryPence / 100).toFixed(2)}
                     </span>{" "}
                     <strong style={{ color: "green" }}>
                       £{(discountedDeliveryFeePence / 100).toFixed(2)}
                     </strong>
                   </>
                 ) : (
-                  <strong>£{(baseDeliveryFeePence / 100).toFixed(2)}</strong>
+                  <strong>£{(deliveryPence / 100).toFixed(2)}</strong>
                 )}
               </p>
             </div>
@@ -357,14 +339,14 @@ export default function CartPage() {
                 {isStudent ? (
                   <>
                     <span style={{ textDecoration: "line-through", color: "#999" }}>
-                      £{(baseDeliveryFeePence / 100).toFixed(2)}
+                      £{(deliveryPence / 100).toFixed(2)}
                     </span>{" "}
                     <strong style={{ color: "green" }}>
                       £{(discountedDeliveryFeePence / 100).toFixed(2)}
                     </strong>
                   </>
                 ) : (
-                  `£${(baseDeliveryFeePence / 100).toFixed(2)}`
+                  `£${(deliveryPence / 100).toFixed(2)}`
                 )}
               </strong>
             </div>

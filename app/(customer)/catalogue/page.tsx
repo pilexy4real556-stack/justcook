@@ -39,6 +39,26 @@ export default function CataloguePage() {
   );
 }
 
+function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
+  const [query, setQuery] = useState("");
+
+  const handleSearch = () => {
+    onSearch(query);
+  };
+
+  return (
+    <div className="search-bar">
+      <input
+        type="text"
+        placeholder="Search for items..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+  );
+}
+
 function CatalogueContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -76,11 +96,19 @@ function CatalogueContent() {
     load();
   }, [category, tag]);
 
+  const handleSearch = (query: string) => {
+    const filteredProducts = products.filter((product) =>
+      product.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setProducts(filteredProducts);
+  };
+
   if (loading) return <p>Loading catalogue…</p>;
 
   return (
     <main className="catalogue-wrapper">
       <div className="catalogue-container">
+        <SearchBar onSearch={handleSearch} />
         <h2 className="section-title">What’s New</h2>
         <WhatsNew />
 

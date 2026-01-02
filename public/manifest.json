@@ -1,20 +1,26 @@
 {
   "name": "JustCook",
   "short_name": "JustCook",
-  "start_url": "/catalogue",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
   "background_color": "#ffffff",
   "theme_color": "#c8f000",
+  "orientation": "portrait",
+  "id": "/",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
