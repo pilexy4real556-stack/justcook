@@ -165,6 +165,19 @@ export default function CartPage() {
     }
   }, [delivery]);
 
+  // Use unique variable names for fallback values
+  const mockCartItems = [
+    { name: "Sample Item", price: 5.99, quantity: 1 },
+  ];
+  const mockDeliveryFee = 299; // Pence
+
+  const fallbackCartItems = items.length > 0 ? items : mockCartItems;
+  const fallbackDeliveryFee = delivery?.fee ?? mockDeliveryFee;
+
+  // Ensure logs for debugging during build
+  console.log("Cart Items:", fallbackCartItems);
+  console.log("Delivery Fee:", fallbackDeliveryFee);
+
   console.log("CART ITEMS", items);
   console.log("CART DEBUG", items);
   console.log("DELIVERY:", delivery);
