@@ -46,33 +46,27 @@ export default function CartPage() {
   const canCheckout = !!delivery && items.length > 0;
 
   const handleCheckout = async () => {
-    try {
-      const res = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            name: item.name,
-            price: item.price, // price is pounds
-            quantity: item.quantity,
-          })),
-          deliveryFeePence: deliveryPence,
-        }),
-      });
+    const res = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: items.map((item) => ({
+          name: item.name,
+          price: item.price, // number, NOT string
+          quantity: item.quantity,
+        })),
+        deliveryFeePence: deliveryFee * 100,
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!data?.url) {
-        console.error("Stripe error:", data);
-        alert("Stripe failed to create checkout session");
-        return;
-      }
-
-      window.location.href = data.url;
-    } catch (err) {
-      console.error(err);
+    if (!data.url) {
       alert("Payment failed");
+      return;
     }
+
+    window.location.href = data.url;
   };
 
   useEffect(() => {

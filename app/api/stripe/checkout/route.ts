@@ -1,44 +1,51 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-12-15.clover",
+});
 
 export async function POST(req: Request) {
   try {
     const { items, deliveryFeePence } = await req.json();
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return NextResponse.json(
-        { error: "Cart is empty" },
-        { status: 400 }
-      );
-    }
+    console.log("Received payload:", { items, deliveryFeePence });
 
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
-      items.map((item: any) => ({
+    // Hardcoded values for testing
+    const testItems = [
+      { name: "Sample Item", price: 5.99, quantity: 1 },
+    ];
+    const testDeliveryFeePence = 299;
+
+    // Hardcoded delivery information for testing
+    const delivery = { fee: 299, description: "Standard Delivery" };
+    console.log("Hardcoded Delivery:", delivery);
+
+    const lineItems = items.map((item) => {
+      const price = Number(item.price);
+
+      if (!Number.isFinite(price)) {
+        throw new Error(`Invalid price for item: ${item.name}`);
+      }
+
+      return {
         price_data: {
           currency: "gbp",
-          product_data: {
-            name: item.name,
-          },
-          unit_amount: Math.round(Number(item.price) * 100),
+          product_data: { name: item.name },
+          unit_amount: Math.round(price * 100),
         },
         quantity: item.quantity,
-      }));
+      };
+    });
 
-    // ✅ Add delivery as a Stripe item
-    if (deliveryFeePence && deliveryFeePence > 0) {
-      lineItems.push({
-        price_data: {
-          currency: "gbp",
-          product_data: {
-            name: "Delivery Fee",
-          },
-          unit_amount: Number(deliveryFeePence), // ✅ already pence
-        },
-        quantity: 1,
-      });
-    }
+    lineItems.push({
+      price_data: {
+        currency: "gbp",
+        product_data: { name: delivery.description },
+        unit_amount: delivery.fee, // Use the hardcoded delivery fee
+      },
+      quantity: 1,
+    });
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -51,7 +58,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Stripe error:", err);
     return NextResponse.json(
-      { error: "Stripe failed" },
+      { error: "Stripe checkout failed" },
       { status: 500 }
     );
   }
