@@ -6,7 +6,7 @@ import { getOrCreateCustomerId } from "@/app/lib/customerId";
 import { collection, doc, getDocs, getDoc, limit, orderBy, query, where } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getDeliveryBand } from "../../lib/delivery";
+import { calculateDistanceFromAddress, getDeliveryBand } from "../../lib/delivery";
 
 export default function CartPage() {
   const { items, clearCart, increaseQuantity, decreaseQuantity } = useCart(); // ✅ Client-side cart only
@@ -83,13 +83,13 @@ export default function CartPage() {
     const timeout = setTimeout(async () => {
       try {
         setLoadingQuote(true);
-        const res = await fetch("/api/distance", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ address }),
-        });
 
-        const data = await res.json();
+        const miles = await calculateDistanceFromAddress(address);
+
+        const data = {
+          distanceMiles: miles,
+          fee: getDeliveryBand(miles)?.fee ?? 0,
+        };
 
         setDeliveryFee(data.fee); // ← THIS MUST HAPPEN
 
