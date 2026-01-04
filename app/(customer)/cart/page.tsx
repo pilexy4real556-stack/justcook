@@ -46,7 +46,7 @@ export default function CartPage() {
   const canCheckout = !!delivery && items.length > 0;
 
   const handleCheckout = async () => {
-    const res = await fetch("/api/stripe/checkout", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/stripe/checkout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
