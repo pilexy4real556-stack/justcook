@@ -46,18 +46,21 @@ export default function CartPage() {
   const canCheckout = !!delivery && items.length > 0;
 
   const handleCheckout = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/stripe/checkout`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: items.map((item) => ({
-          name: item.name,
-          price: item.price, // number, NOT string
-          quantity: item.quantity,
-        })),
-        deliveryFeePence: deliveryFee * 100,
-      }),
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/checkout`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((item) => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+          })),
+          deliveryFeePence: deliveryFee, // already in pence
+        }),
+      }
+    );
 
     const data = await res.json();
 
