@@ -275,17 +275,20 @@ export default function CartPage() {
 
                   <div className="quantity-section">
                     {isKg ? (
-                      <>
-                        <button
-                          className="edit-weight-btn"
-                          onClick={() => router.push(`/product/${item.id}`)}
-                        >
-                          Edit quantity
-                        </button>
-                        <small style={{ color: "#777" }}>
-                          Sold by weight — tap to edit
-                        </small>
-                      </>
+                      <button
+                        className="edit-weight-btn"
+                        onClick={() => router.push(`/product/${item.id}`)}
+                        onTouchStart={() => router.push(`/product/${item.id}`)}
+                        style={{
+                          width: "100%",
+                          minHeight: "48px",
+                          textAlign: "left",
+                        }}
+                      >
+                        Edit quantity
+                        <br />
+                        <small>Sold by weight — tap to edit</small>
+                      </button>
                     ) : (
                       <div className="cart-qty">
                         <button
