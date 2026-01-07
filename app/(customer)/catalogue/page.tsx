@@ -39,26 +39,6 @@ export default function CataloguePage() {
   );
 }
 
-function SearchBar({ onSearch }: { onSearch: (query: string) => void }) {
-  const [query, setQuery] = useState("");
-
-  const handleSearch = () => {
-    onSearch(query);
-  };
-
-  return (
-    <div className="search-bar">
-      <input
-        type="text"
-        placeholder="Search for items..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-    </div>
-  );
-}
-
 function CatalogueContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -66,41 +46,46 @@ function CatalogueContent() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   const category = searchParams.get("category") || "ALL";
   const tag = searchParams.get("tag");
 
+  const loadProducts = async () => {
+    let q;
+
+    if (tag) {
+      q = query(collection(db, "products"), where("tags", "array-contains", tag));
+    } else if (category !== "ALL") {
+      q = query(collection(db, "products"), where("category", "==", category));
+    } else {
+      q = collection(db, "products");
+    }
+
+    const snap = await getDocs(q);
+    setProducts(
+      snap.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Product),
+      }))
+    );
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const load = async () => {
-      let q;
-
-      if (tag) {
-        q = query(collection(db, "products"), where("tags", "array-contains", tag));
-      } else if (category !== "ALL") {
-        q = query(collection(db, "products"), where("category", "==", category));
-      } else {
-        q = collection(db, "products");
-      }
-
-      const snap = await getDocs(q);
-      setProducts(
-        snap.docs.map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Product),
-        }))
-      );
-
-      setLoading(false);
-    };
-
-    load();
+    loadProducts();
   }, [category, tag]);
 
   const handleSearch = (query: string) => {
-    const filteredProducts = products.filter((product) =>
-      product.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setProducts(filteredProducts);
+    if (query.trim() === "") {
+      loadProducts();
+    } else {
+      const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setProducts(filteredProducts);
+    }
   };
 
   if (loading) return <p>Loading catalogue…</p>;
@@ -108,28 +93,58 @@ function CatalogueContent() {
   return (
     <main className="catalogue-wrapper">
       <div className="catalogue-container">
-        <SearchBar onSearch={handleSearch} />
+        {/* FILTER BAR */}
+        <div className="catalogue-filters">
+          <div className="categories">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`category-pill ${category === cat ? "active" : ""}`}
+                onClick={() => {
+                  router.push(
+                    cat === "ALL"
+                      ? "/catalogue"
+                      : `/catalogue?category=${encodeURIComponent(cat)}`
+                  );
+                  loadProducts();
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Search products…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <button
+              onClick={() => handleSearch(search)}
+              style={{
+                padding: "10px 16px",
+                marginLeft: "8px",
+                backgroundColor: "#84cc16",
+                color: "white",
+                border: "none",
+                borderRadius: "999px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "600",
+                transition: "background-color 0.3s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#6aa312")}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#84cc16")}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+
         <h2 className="section-title">What’s New</h2>
         <WhatsNew />
-
-        <h2 className="section-title">Categories</h2>
-        <div className="category-scroll">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`category-pill ${category === cat ? "active" : ""}`}
-              onClick={() =>
-                router.push(
-                  cat === "ALL"
-                    ? "/catalogue"
-                    : `/catalogue?category=${encodeURIComponent(cat)}`
-                )
-              }
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
 
         <h2 className="section-title">Products</h2>
 

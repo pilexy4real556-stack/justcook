@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/app/lib/cart";
 import { useEffect, useState } from "react";
+import styles from "./Header.module.css";
 
 export default function Header() {
   const { items } = useCart();

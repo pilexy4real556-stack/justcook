@@ -22,6 +22,7 @@ const STATUS_COLORS: Record<string, string> = {
 type Order = {
   id: string;
   customerName?: string;
+  customerPhone?: string;
   totalAmount?: number;
   paymentStatus?: string;
   orderStatus?: string;
@@ -53,6 +54,7 @@ export default function PicOrdersPage() {
           return {
             id: doc.id,
             customerName: raw.customerName ?? "Unknown",
+            customerPhone: raw.customerPhone ?? "", // 👈 HERE
             totalAmount: typeof raw.totalAmount === "number" ? raw.totalAmount : 0,
             paymentStatus: raw.paymentStatus ?? "UNKNOWN",
             orderStatus: raw.orderStatus ?? "UNKNOWN",
@@ -100,6 +102,7 @@ export default function PicOrdersPage() {
           <thead>
             <tr>
               <th align="left">Customer</th>
+              <th align="left">Phone</th>
               <th align="left">Total (£)</th>
               <th align="left">Payment</th>
               <th align="left">Status</th>
@@ -122,6 +125,18 @@ export default function PicOrdersPage() {
                 }}
               >
                 <td>{order.customerName}</td>
+                <td>
+                  {order.customerPhone ? (
+                    <a
+                      href={`tel:${order.customerPhone}`}
+                      style={{ color: "#2563eb" }}
+                    >
+                      {order.customerPhone}
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>{(order.totalAmount! / 100).toFixed(2)}</td>
                 <td>{order.paymentStatus}</td>
                 <td>{order.orderStatus}</td>

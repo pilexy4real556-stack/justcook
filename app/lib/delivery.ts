@@ -44,7 +44,15 @@ export const useDeliveryLogic = () => {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+if (!BASE_URL) {
+  throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
+}
+
 export async function calculateDistanceFromAddress(address: string): Promise<number | null> {
+  if (!address || address.trim().length < 5) {
+    return null; // DO NOT log error
+  }
+
   try {
     const response = await fetch(`${BASE_URL}/api/distance`, {
       method: "POST",
@@ -53,14 +61,15 @@ export async function calculateDistanceFromAddress(address: string): Promise<num
     });
 
     if (!response.ok) {
-      console.error("Failed to calculate distance", response.statusText);
+      // Only log real failures
+      console.warn("Distance API returned non-OK", response.status);
       return null;
     }
 
     const data = await response.json();
-    return data.distanceMiles || null;
-  } catch (error) {
-    console.error("Error calculating distance", error);
+    return data.distanceMiles;
+  } catch (err) {
+    console.warn("Distance fetch failed", err);
     return null;
   }
 }

@@ -1,11 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/lib/firebaseClient";
 import { useCart } from "@/app/lib/cart";
 
+/* 👇 WHATSAPP CONSTANTS HERE */
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+
+const message = encodeURIComponent(
+  "Hi JustCook, I need help with an order or product."
+);
+
+const whatsappLink = whatsappNumber
+  ? `https://wa.me/${whatsappNumber}?text=${message}`
+  : "";
+
+/* 👇 COMPONENT */
 type Product = {
   id: string;
   name: string;
@@ -17,7 +29,7 @@ type Product = {
   unitType?: "kg" | "item"; // Added unitType property
 };
 
-export default function ProductPage() {
+const ProductPage: React.FC = () => {
   const { id } = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
@@ -225,6 +237,55 @@ export default function ProductPage() {
           </div>
         </div>
       )}
+
+      {/* WhatsApp Button */}
+      <div className="whatsapp-button-wrapper">
+        {whatsappNumber && (
+          <a
+            className="whatsapp-button"
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              position: "fixed",
+              bottom: "24px",
+              right: "24px",
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              background: "#ffffff",
+              border: "2px solid #25D366",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+              cursor: "pointer",
+              zIndex: 1000,
+              transition: "all 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#f0fdf4";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#ffffff";
+            }}
+            aria-label="WhatsApp Support"
+          >
+            {/* WhatsApp Icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="#25D366"
+            >
+              <path d="M12 2a10 10 0 0 0-8.66 15l-1.3 4.75 4.88-1.28A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.13l-.3-.17-2.9.77.78-2.82-.2-.3A8 8 0 1 1 12 20Zm4.6-5.4c-.25-.12-1.47-.73-1.7-.82-.23-.08-.4-.12-.57.12-.17.25-.65.82-.8.98-.15.17-.3.18-.55.06-.25-.12-1.06-.39-2.02-1.24-.75-.67-1.26-1.5-1.4-1.75-.15-.25-.02-.38.1-.5.1-.1.25-.27.37-.4.12-.12.17-.2.25-.35.08-.15.04-.28-.02-.4-.06-.12-.57-1.38-.78-1.9-.2-.48-.4-.42-.57-.43h-.48c-.17 0-.4.06-.62.28-.22.22-.82.8-.82 1.95 0 1.15.85 2.26.97 2.42.12.17 1.67 2.55 4.05 3.58.57.25 1.02.4 1.37.5.58.18 1.1.15 1.52.1.46-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.15-1.18-.05-.1-.22-.15-.47-.28Z" />
+            </svg>
+          </a>
+        )}
+      </div>
     </main>
   );
-}
+};
+
+export default ProductPage;

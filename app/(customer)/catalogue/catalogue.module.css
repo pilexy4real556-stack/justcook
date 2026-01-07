@@ -126,6 +126,38 @@
   background-color: #45a049; /* Darker green */
 }
 
+/* ===== FILTERS ===== */
+.catalogue-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+
+.categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-box input {
+  padding: 12px 16px;
+  min-width: 280px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.search-box input:focus {
+  border-color: #84cc16; /* matches your green */
+  box-shadow: 0 0 8px rgba(132, 204, 22, 0.5);
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
   .catalogueGrid {

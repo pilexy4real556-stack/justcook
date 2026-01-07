@@ -12,6 +12,7 @@ export default function CartPage() {
   const { items, clearCart, increaseQuantity, decreaseQuantity } = useCart(); // ✅ Client-side cart only
   const router = useRouter();
   const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
   const [distance, setDistance] = useState<number | null>(null);
   const [delivery, setDelivery] = useState<any>(null);
   const [loadingQuote, setLoadingQuote] = useState(false);
@@ -43,7 +44,10 @@ export default function CartPage() {
   // final total shown to user in pounds
   const finalTotalPounds = itemsTotalPounds + discountedDeliveryFeePence / 100;
 
-  const canCheckout = !!delivery && items.length > 0;
+  const canCheckout =
+    !!delivery &&
+    items.length > 0 &&
+    phone.trim().length >= 8;
 
   const handleCheckout = async () => {
     const res = await fetch(
@@ -57,7 +61,9 @@ export default function CartPage() {
             price: item.price,
             quantity: item.quantity,
           })),
-          deliveryFeePence: deliveryFee, // already in pence
+          deliveryFeePence: deliveryFee,
+          deliveryAddress: address,
+          customerPhone: phone,
         }),
       }
     );
@@ -239,6 +245,21 @@ export default function CartPage() {
             placeholder="Full delivery address"
           />
 
+          {/* Phone number */}
+          <label className="block mb-2 text-sm">
+            Phone number <span style={{ color: "red" }}>*</span>
+          </label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="address-input"
+            placeholder="+44 7123 456789"
+          />
+          <small style={{ color: "#666" }}>
+            Used only to contact you during delivery
+          </small>
+
           {loadingQuote && (
             <p className="text-sm text-gray-500 mt-2">
               Calculating delivery…
@@ -265,62 +286,30 @@ export default function CartPage() {
             </div>
           )}
 
-          {items.map((item) => {
-            const isKg = item.unitType === "kg"; // Detect unit type
+          {/* Cart items list - Updated to use cartItems directly */}
+          {items.map(item => (
+            <div key={item.id} className="cart-item">
+              <span className="item-name">{item.name}</span>
+              <span className="item-price">£{(item.price / 100).toFixed(2)}</span>
 
-            return (
-              <div key={item.id} className="cart-item">
-                <div>
-                  <h4>{item.name}</h4>
-
-                  <div className="quantity-section">
-                    {isKg ? (
-                      <button
-                        className="edit-weight-btn"
-                        onClick={() => router.push(`/product/${item.id}`)}
-                        onTouchStart={() => router.push(`/product/${item.id}`)}
-                        style={{
-                          width: "100%",
-                          minHeight: "48px",
-                          textAlign: "left",
-                        }}
-                      >
-                        Edit quantity
-                        <br />
-                        <small>Sold by weight — tap to edit</small>
-                      </button>
-                    ) : (
-                      <div className="cart-qty">
-                        <button
-                          onClick={() =>
-                            decreaseQuantity(item.id, (q) => Math.max(1, q - 1))
-                          }
-                        >
-                          −
-                        </button>
-                        <span>{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            increaseQuantity(item.id, (q) => q + 1)
-                          }
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-
-                    <p className="price">
-                      £{(item.price * item.quantity).toFixed(2)}
-                    </p>
-
-                    <small>
-                      £{item.price.toFixed(2)} per {isKg ? "kg" : "item"}
-                    </small>
-                  </div>
-                </div>
+              <div className="quantity-controls">
+                <button
+                  className="quantity-btn"
+                  onClick={() => decreaseQuantity(item.id)}
+                >
+                  −
+                </button>
+                <span className="quantity">{item.quantity}</span>
+                <button
+                  className="quantity-btn"
+                  onClick={() => increaseQuantity(item.id)}
+                >
+                  +
+                </button>
               </div>
-            );
-          })}
+            </div>
+          ))}
+
         </div>
 
         {/* RIGHT */}
