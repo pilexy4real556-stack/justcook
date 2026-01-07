@@ -200,14 +200,14 @@ const ProductPage: React.FC = () => {
             {/* ✅ ADD TO CART BUTTON — THIS WAS MISSING */}
             <button
               className="add-to-cart-btn"
-              onClick={() =>
+              onClick={() => {
                 addToCart({
                   id: product.id,
                   name: product.name,
                   price: product.unitPrice,
                   quantity,
-                })
-              }
+                });
+              }}
             >
               Add to Cart
             </button>

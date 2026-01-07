@@ -138,8 +138,20 @@
 
 .categories {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+
+.categories::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure category buttons do not wrap */
+.categoryBtn {
+  flex: 0 0 auto;
 }
 
 .search-box input {
