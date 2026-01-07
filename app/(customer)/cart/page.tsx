@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { calculateDistanceFromAddress, getDeliveryBand } from "../../lib/delivery";
 
 export default function CartPage() {
-  const { items, clearCart, increaseQuantity, decreaseQuantity } = useCart(); // ✅ Client-side cart only
+  const { items, clearCart, increaseQuantity, decreaseQuantity, addToCart } = useCart(); // ✅ Client-side cart only
   const router = useRouter();
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
