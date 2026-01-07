@@ -7,7 +7,6 @@ import { CartProvider } from "@/app/lib/cart";
 import BackButton from "./components/BackButton";
 import { useRouter } from "next/navigation";
 import ReferralCapture from "./components/ReferralCapture";
-import WhatsAppFloating from "@/app/components/WhatsAppFloating";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -29,7 +28,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <BackButton />
         </header>
         <ReferralCapture />
-        <WhatsAppFloating />
         <CartProvider>{children}</CartProvider>
       </body>
     </html>
