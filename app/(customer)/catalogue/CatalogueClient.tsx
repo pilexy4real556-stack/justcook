@@ -75,7 +75,7 @@ export default function CatalogueClient() {
         <WhatsNew />
 
         <h2 className="section-title">Categories</h2>
-        <div className="category-scroll">
+        <div className="categories">
           {categories.map((cat) => (
             <button
               key={cat}
