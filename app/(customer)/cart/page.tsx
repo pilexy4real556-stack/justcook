@@ -89,11 +89,13 @@ export default function CartPage() {
       return;
     }
 
+    let cancelled = false;
     const timeout = setTimeout(async () => {
       try {
         setLoadingQuote(true);
 
         const miles = await calculateDistanceFromAddress(address);
+        if (cancelled) return;
 
         const data = {
           distanceMiles: miles,
@@ -107,14 +109,15 @@ export default function CartPage() {
         setDistance(data.distanceMiles);
         setDelivery(getDeliveryBand(data.distanceMiles));
       } catch {
+        if (cancelled) return;
         setDistance(null);
-        setDelivery(null);
-      } finally {
-        setLoadingQuote(false);
       }
     }, 600);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, [address]);
 
   useEffect(() => {
@@ -290,7 +293,7 @@ export default function CartPage() {
           {items.map(item => (
             <div key={item.id} className="cart-item">
               <span className="item-name">{item.name}</span>
-              <span className="item-price">£{(item.price / 100).toFixed(2)}</span>
+              <span className="item-price">£{Number(item.price).toFixed(2)}</span>
 
               <div className="quantity-controls">
                 <button
