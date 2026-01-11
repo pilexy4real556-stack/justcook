@@ -95,11 +95,11 @@ function CatalogueContent() {
       <div className="catalogue-container">
         {/* FILTER BAR */}
         <div className="catalogue-filters">
-          <div className="categories">
+          <div className={styles.categoryRow}>
             {categories.map((cat) => (
               <button
                 key={cat}
-                className={`category-pill ${category === cat ? "active" : ""}`}
+                className={styles.categoryButton}
                 onClick={() => {
                   router.push(
                     cat === "ALL"

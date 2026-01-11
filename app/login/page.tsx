@@ -19,8 +19,9 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/pic/orders");
-    } catch (err) {
-      setError("Invalid email or password");
+    } catch (error: any) {
+      console.error("Firebase Auth error:", error.code, error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }

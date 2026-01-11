@@ -1,19 +1,18 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIza...",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: "justcook-5f0af.firebaseapp.com",
   projectId: "justcook-5f0af",
   storageBucket: "justcook-5f0af.appspot.com",
-  messagingSenderId: "1079...",
-  appId: "1:1079:web:..."
+  messagingSenderId: "1079264534356",
+  appId: "1:1079264534356:web:xxxxxxxx"
 };
 
-const app = getApps().length === 0
-  ? initializeApp(firebaseConfig)
-  : getApps()[0];
+
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

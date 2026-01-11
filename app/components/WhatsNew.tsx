@@ -6,7 +6,6 @@ import { db } from "@/app/lib/firebaseClient";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-
 import "swiper/css";
 
 import styles from "./WhatsNew.module.css";
@@ -36,7 +35,7 @@ export default function WhatsNew() {
 
         const snap = await getDocs(q);
 
-        const imageMapping = {
+        const imageMapping: Record<string, string> = {
           "Just Cook": "just-cook.png",
           "Referral Discount": "referral.png",
           "Fresh Fruits & Vegetables": "fresh-fruits.png",
@@ -45,60 +44,48 @@ export default function WhatsNew() {
           "Household Items": "household.png",
         };
 
-        const data = snap.docs.map((doc) => {
-          const docData = doc.data();
-          return {
-            id: doc.id,
-            title: docData.title,
-            subtitle: docData.subtitle,
-            imageUrl: `/images/${imageMapping[docData.title] || "placeholder.png"}`,
-          };
-        });
-
-        setItems(data);
-      } catch (error) {
-        console.error("Error fetching Firestore data:", error);
+        setItems(
+          snap.docs.map((doc) => {
+            const d = doc.data();
+            return {
+              id: doc.id,
+              title: d.title,
+              subtitle: d.subtitle,
+              imageUrl: `/images/${imageMapping[d.title] ?? "placeholder.png"}`,
+            };
+          })
+        );
+      } catch (err) {
+        console.error("WhatsNew Firestore error:", err);
       }
     };
 
     load();
   }, []);
 
-  useEffect(() => {
-    const swiperElement = document.querySelector(".swiper") as HTMLElement & { swiper?: any };
-    swiperElement?.swiper?.autoplay?.start();
-  }, [items]);
-
   if (!items.length) return null;
 
   return (
     <section className={styles.wrapper}>
-      <div className="carousel" key="whats-new-carousel">
-        <Swiper
-          modules={[Autoplay]}
-          slidesPerView="auto"
-          spaceBetween={20}
-          loop={true} // Ensure looping is enabled
-          speed={5000}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false, // Prevent stopping on user interaction
-            pauseOnMouseEnter: false, // Ensure autoplay continues even on hover
-          }}
-        >
-          {items.map((item) => (
-            <SwiperSlide key={item.id} style={{ width: 320 }}>
-              <div className={styles.card}>
-                <img src={item.imageUrl} alt={item.title} />
-                <div className={styles.text}>
-                  <h3>{item.title}</h3>
-                  {item.subtitle && <p>{item.subtitle}</p>}
-                </div>
+      <Swiper
+        modules={[Autoplay]}
+        slidesPerView="auto"
+        spaceBetween={20}
+        loop
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
+      >
+        {items.map((item) => (
+          <SwiperSlide key={item.id} style={{ width: 320 }}>
+            <div className={styles.card}>
+              <img src={item.imageUrl} alt={item.title} />
+              <div className={styles.text}>
+                <h3>{item.title}</h3>
+                {item.subtitle && <p>{item.subtitle}</p>}
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </section>
   );
 }
