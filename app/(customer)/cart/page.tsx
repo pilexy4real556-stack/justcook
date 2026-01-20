@@ -210,6 +210,23 @@ export default function CartPage() {
   }, []);
 
   // -------------------------------
+  // Load pending referral code from URL
+  // -------------------------------
+  useEffect(() => {
+    // Load pending referral code from localStorage (set by ReferralCapture component)
+    const pendingCode = localStorage.getItem("pendingReferralCode");
+    if (pendingCode && !referralCode) {
+      setReferralCode(pendingCode);
+      localStorage.removeItem("pendingReferralCode");
+      // Auto-validate
+      validateReferral(pendingCode).catch((err) => {
+        console.error("Failed to validate pending referral code:", err);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // -------------------------------
   // Referral validation (call backend)
   // IMPORTANT: validate returns { valid: true, referrerId }
   // -------------------------------
