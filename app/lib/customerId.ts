@@ -1,20 +1,19 @@
-export function getOrCreateCustomerId(): string {
+export async function getOrCreateCustomerId(): Promise<string> {
   if (typeof window === "undefined") return "";
 
   let id = localStorage.getItem("customerId");
+  if (id) return id;
 
-  if (!id) {
-    function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/customer`,
+    { method: "POST" }
+  );
 
-    id = generateUUID();
-    localStorage.setItem("customerId", id);
+  if (!res.ok) {
+    throw new Error("Failed to create customer");
   }
 
-  return id;
+  const data = await res.json();
+  localStorage.setItem("customerId", data.customerId);
+  return data.customerId;
 }
