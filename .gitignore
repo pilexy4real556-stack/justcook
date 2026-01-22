@@ -42,3 +42,5 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+justcook-5f0af-firebase-adminsdk-fbsvc-dcd2dcd126.json

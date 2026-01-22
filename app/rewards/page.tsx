@@ -9,7 +9,7 @@ export default function RewardsPage() {
 
   useEffect(() => {
     const load = async () => {
-      const id = getOrCreateCustomerId();
+      const id = await getOrCreateCustomerId();
       const ref = await getOrCreateReferralCode(id);
       setCode(ref);
     };
