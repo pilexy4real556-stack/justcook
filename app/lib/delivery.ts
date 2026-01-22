@@ -3,27 +3,13 @@
 import { useEffect, useState } from "react";
 
 export function getDeliveryBand(distanceMiles: number) {
-  if (distanceMiles == null || isNaN(distanceMiles)) {
-    return null;
-  }
+  if (distanceMiles == null || Number.isNaN(distanceMiles)) return null;
 
-  if (distanceMiles < 3) {
-    return { band: "0–3 miles", fee: 299 };
-  }
+  if (distanceMiles <= 3) return { label: "0–3 miles", fee: 299 };
+  if (distanceMiles <= 6) return { label: "3–6 miles", fee: 499 };
+  if (distanceMiles <= 10) return { label: "6–10 miles", fee: 799 };
 
-  if (distanceMiles < 6) {
-    return { band: "3–6 miles", fee: 499 };
-  }
-
-  if (distanceMiles < 10) {
-    return { band: "6–10 miles", fee: 699 };
-  }
-
-  return {
-    band: "10+ miles",
-    fee: 0, // IMPORTANT: never null
-    requiresQuote: true,
-  };
+  return { label: "10+ miles", fee: 0, requiresQuote: true };
 }
 
 export const useDeliveryLogic = () => {
@@ -44,32 +30,30 @@ export const useDeliveryLogic = () => {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-if (!BASE_URL) {
-  throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
-}
-
-export async function calculateDistanceFromAddress(address: string): Promise<number | null> {
-  if (!address || address.trim().length < 5) {
-    return null; // DO NOT log error
+export async function calculateDistanceFromAddress(address: string): Promise<number> {
+  if (!BASE_URL) {
+    console.error("[DISTANCE ERROR] NEXT_PUBLIC_BACKEND_URL missing");
+    return 0;
   }
 
-  try {
-    const response = await fetch(`${BASE_URL}/api/distance`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ address }),
-    });
+  const response = await fetch(`${BASE_URL}/api/distance`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ address }),
+  });
 
-    if (!response.ok) {
-      // Only log real failures
-      console.warn("Distance API returned non-OK", response.status);
-      return null;
-    }
-
-    const data = await response.json();
-    return data.distanceMiles;
-  } catch (err) {
-    console.warn("Distance fetch failed", err);
-    return null;
+  if (!response.ok) {
+    const errText = await response.text();
+    console.error("[DISTANCE ERROR] API failed:", response.status, response.statusText, errText);
+    return 0;
   }
+
+  const data = await response.json();
+
+  if (typeof data.distanceMiles !== "number" || data.distanceMiles <= 0) {
+    console.error("[DISTANCE ERROR] Invalid payload:", data);
+    return 0;
+  }
+
+  return data.distanceMiles;
 }
